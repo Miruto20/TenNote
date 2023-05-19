@@ -1,6 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const ddbb = require("./ddbb/notes.json");
+const { writeFile } = require("node:fs/promises");
+const { log } = require("node:console");
 
 const app = express();
 const PORT = 3000;
@@ -14,10 +17,35 @@ app.use(express.json());
 
 //endpoint de prueba
 app.get("/test", (req, res) => {
+  console.log(ddbb);
   res.send({
     status: "ok",
-    message: "Hola desde el backend!",
+    message: ddbb.root,
   });
+});
+
+app.post("/test/", async (req, res) => {
+  const { name, content, isDir } = req.body;
+  console.log(req.body);
+  const note = { id: Date.now().toString, isDir, name, content };
+  ddbb[0].content.push(note);
+
+  try {
+    await writeFile(
+      "./backend/ddbb/notes.json",
+      JSON.stringify([...ddbb], null, 2)
+    );
+    res.send({
+      status: "ok",
+      message: "Nota creada y guardada correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      status: "error",
+      message: "Error al guardar la nota",
+    });
+  }
 });
 app.use(morgan("dev"));
 

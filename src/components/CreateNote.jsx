@@ -14,7 +14,17 @@ const CreateNote = ({ prueba, setPrueba }) => {
   const handlePress = () => {
     const getPrueba = async () => {
       try {
-        const res = await fetch("http://10.0.2.2:3000/test");
+        const res = await fetch("http://10.0.2.2:3000/test", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "nota",
+            content: "nota anotada",
+            isDir: false,
+          }),
+        });
 
         if (!res.ok) throw new Error();
 

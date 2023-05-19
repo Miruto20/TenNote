@@ -1,1 +1,26 @@
-[{ "root": [] }]
+[
+  {
+    "id": "root-id",
+    "isDir": true,
+    "name": "root",
+    "content": [
+      {
+        "id": "test",
+        "isDir": false,
+        "name": "Test-note",
+        "content": "Nota de prueba"
+      },
+      {
+        "id": "test",
+        "isDir": false,
+        "name": "Test-note",
+        "content": "Nota de prueba"
+      },
+      {
+        "isDir": false,
+        "name": "nota",
+        "content": "nota anotada"
+      }
+    ]
+  }
+]
