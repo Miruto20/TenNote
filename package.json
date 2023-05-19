@@ -10,6 +10,7 @@
     "dev": "nodemon ./backend/server.js"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "expo": "~48.0.15",
     "expo-file-system": "~15.2.2",

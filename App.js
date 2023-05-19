@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 
 import { StatusBar } from "expo-status-bar";
-import CreateNote from "./scr/components/CreateNote";
+import CreateNote from "./src/components/CreateNote";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function App() {
+  const [prueba, setPrueba] = useState("hola");
+
   return (
     <View style={styles.container}>
-      <Text>Ten Note Gestor</Text>
-      <CreateNote />
+      <Text>TenNote Gestor</Text>
+      <CreateNote prueba={prueba} setPrueba={setPrueba} />
       <StatusBar style="auto" />
+      <Text>{prueba}</Text>
     </View>
   );
 }
