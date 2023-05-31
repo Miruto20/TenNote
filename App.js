@@ -7,12 +7,13 @@ import { StyleSheet, Text, View } from "react-native";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
-  const [notes, setNotes] = useState(undefined);
+  const [notes, setNotes] = useState([]);
   const testNote = { title: "Prueba", content: "Esto es otra nota de prueba" };
 
   useEffect(() => {
-    /*     createTables(); */
-    /* insertNote(testNote); */
+    /*     createTables();
+    insertNote(testNote); */
+
     try {
       selectAllNotes(setNotes);
     } catch (err) {
@@ -26,7 +27,18 @@ export default function App() {
   return (
     <View style={styles.container}>
       {loading && <Text>Cargando las notas</Text>}
-      {!loading && <Text>{notes[0].content}</Text>}
+      {!loading && (
+        <View>
+          {notes.map((note) => {
+            <Text>
+              <View>
+                <Text>{note.title}</Text>
+                <Text>{note.content}</Text>
+              </View>
+            </Text>;
+          })}
+        </View>
+      )}
     </View>
   );
 }

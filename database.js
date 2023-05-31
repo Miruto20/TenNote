@@ -39,7 +39,7 @@ export const deleteTables = () => {
 };
 
 // Insertar Notas
-export const insertNote = (note) => {
+export const insertNote = (note, notes) => {
   try {
     // Comprueba si la nota está vacía.
     if (!note.content) throw new error("No puedes generar notas vacías.");
@@ -53,12 +53,24 @@ export const insertNote = (note) => {
       }
     }
     // Inserta la nota en la base de datos.
-    db.transaction((transaction) => {
-      transaction.executeSql(`INSERT INTO notes(title, content) VALUES(?,?)`, [
-        note.title,
-        note.content,
-      ]);
-    });
+    db.transaction(
+      (transaction) => {
+        transaction.executeSql(
+          `INSERT INTO notes(title, content) VALUES(?,?)`,
+          [note.title, note.content]
+        );
+      },
+      // Callback de exito que actualiza el estado con las notas nuevas.
+      (transactionObj, resultSet) => {
+        let existingNotes = [...notes];
+        existingNotes.push({
+          id: resultSet.insertId,
+          title: note.title,
+          content: note.content,
+          createdAt: resultSet.insertCreatedAt,
+        });
+      }
+    );
   } catch (err) {
     console.error(err.message);
   } finally {
@@ -71,8 +83,14 @@ export const selectAllNotes = (setNotes) => {
     db.transaction((transaction) => {
       transaction.executeSql(
         "SELECT * FROM notes",
+        // Aquí irían los campos en caso de ser un insert statement.
         null,
-        (transactionObj, resultSet) => setNotes(resultSet.rows._array),
+        // Callback de éxito que nos cambia el estado de las notas.
+        (transactionObj, resultSet) => {
+          console.log("el pepe ", resultSet.rows._array);
+          setNotes([...resultSet.rows._array]);
+        },
+        // Callback de error
         (transactionObj, error) => console.log(error)
       );
     });
