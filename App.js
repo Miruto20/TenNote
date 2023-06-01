@@ -1,42 +1,68 @@
 import React, { useEffect, useState } from "react";
 import * as SQLite from "expo-sqlite";
-import { db, createTables, selectAllNotes, insertNote } from "./database";
 import { StatusBar } from "expo-status-bar";
-import CreateNote from "./src/components/CreateNote";
-import { StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState([]);
-  const testNote = { title: "Prueba", content: "Esto es otra nota de prueba" };
+  const [currentTitle, setCurrentTitle] = useState("");
+  const [currentContent, setCurrentContent] = useState("");
 
+  const handleSubmit = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `INSERT INTO notes(title,content,createdAt) VALUES(?,?,?)`,
+        [currentTitle, currentContent, new Date()],
+        (txObject, resultSet) => {
+          const currentNotes = [...notes];
+          currentNotes.push({
+            title: currentTitle,
+            content: currentContent,
+            id: resultSet.insertId,
+            createdAt: new Date(),
+          });
+          setNotes(currentNotes);
+          setCurrentContent("");
+          setCurrentTitle("");
+        },
+        (error) => console.log("ERROR, ", error)
+      );
+    });
+    console.log("Cola");
+  };
   useEffect(() => {
-    /*     createTables();
-    insertNote(testNote); */
-
     try {
-      selectAllNotes(setNotes);
-    } catch (err) {
-      console.error(err.message);
+      const db = SQLite.openDatabase("ten_note.db");
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
-    console.log("aquí ", notes);
   }, []);
 
   return (
     <View style={styles.container}>
       {loading && <Text>Cargando las notas</Text>}
       {!loading && (
-        <View>
-          {notes.map((note) => {
-            <Text>
-              <View>
-                <Text>{note.title}</Text>
-                <Text>{note.content}</Text>
-              </View>
-            </Text>;
-          })}
+        <View style={styles.container}>
+          <TextInput
+            placeholder="Título"
+            onChangeText={() => {
+              setCurrentTitle(currentTitle);
+            }}
+          >
+            {currentTitle}
+          </TextInput>
+          <TextInput
+            placeholder="¿En qué piensas?"
+            onChangeText={() => {
+              setCurrentContent(currentTitle);
+            }}
+          >
+            {currentContent}
+          </TextInput>
+          <Button title="Guardar nota" onPress={handleSubmit}></Button>
         </View>
       )}
     </View>
