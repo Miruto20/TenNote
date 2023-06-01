@@ -2,10 +2,21 @@ import React, { useEffect, useState } from "react";
 import * as SQLite from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import ListNotes from "./src/components/ListNotes.jsx";
 
 export default function App() {
+  const test = true;
   const [loading, setLoading] = useState(true);
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState([
+    {
+      id: "1",
+      content: `EL ser humano es increíble me parece una sobrada toda esta vaina que me está contando este notas`,
+      title: "Nota de prueba",
+    },
+    { id: "2", content: "prueba 2", title: "Nota de prueba 2" },
+    { id: "3", content: "prueba 3", title: "Nota de prueba 3" },
+    { id: "4", content: "prueba 4", title: "lorem" },
+  ]);
   const [currentTitle, setCurrentTitle] = useState("");
   const [currentContent, setCurrentContent] = useState("");
 
@@ -31,7 +42,7 @@ export default function App() {
     });
     console.log("Cola");
   };
-  useEffect(() => {
+  /* useEffect(() => {
     try {
       const db = SQLite.openDatabase("ten_note.db");
     } catch (error) {
@@ -39,8 +50,14 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
-
+  }, []); */
+  if (test) {
+    return (
+      <View style={styles.container}>
+        <ListNotes notes={notes}></ListNotes>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       {loading && <Text>Cargando las notas</Text>}
