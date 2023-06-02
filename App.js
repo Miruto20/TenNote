@@ -7,6 +7,7 @@ import CreateNote from "./src/components/CreateNote.jsx";
 
 export default function App() {
   const test = true;
+  const db = SQLite.openDatabase("ten_note.db");
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState([
     {
@@ -18,41 +19,37 @@ export default function App() {
     { id: "3", content: "prueba 3", title: "Nota de prueba 3" },
     { id: "4", content: "prueba 4", title: "lorem" },
   ]);
-  const [currentTitle, setCurrentTitle] = useState("");
-  const [currentContent, setCurrentContent] = useState("");
-
-  const handleSubmit = () => {
+  useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        `INSERT INTO notes(title,content,createdAt) VALUES(?,?,?)`,
-        [currentTitle, currentContent, new Date()],
-        (txObject, resultSet) => {
-          const currentNotes = [...notes];
-          currentNotes.push({
-            title: currentTitle,
-            content: currentContent,
-            id: resultSet.insertId,
-            createdAt: new Date(),
-          });
-          setNotes(currentNotes);
-          setCurrentContent("");
-          setCurrentTitle("");
-        },
-        (error) => console.log("ERROR, ", error)
+        `CREATE TABLE IF NOT EXISTS notes(
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          title VARCHAR(20), content TEXT, 
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
       );
     });
-    console.log("Cola");
-  };
-  /* useEffect(() => {
-    try {
-      const db = SQLite.openDatabase("ten_note.db");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []); */
+    db.transaction((tx) => {
+      tx.executeSql(
+        `SELECT * FROM notes`,
+        null,
+        (txObj, resultSet) => {
+          setNotes(resultSet.rows._array);
+        },
+        (txObj, error) => console.log(error)
+      );
+    });
+
+    setLoading(false);
+  }, []);
+
   if (test) {
+    if (loading) {
+      return (
+        <View style={styles.container}>
+          <Text>CARREGANDO</Text>
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <ListNotes notes={notes}></ListNotes>
@@ -90,6 +87,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 20,
     flex: 1,
     gap: 10,
     backgroundColor: "#fff",
