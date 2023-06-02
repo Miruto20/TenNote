@@ -3,6 +3,7 @@ import * as SQLite from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import ListNotes from "./src/components/ListNotes.jsx";
+import CreateNote from "./src/components/CreateNote.jsx";
 
 export default function App() {
   const test = true;
@@ -55,6 +56,7 @@ export default function App() {
     return (
       <View style={styles.container}>
         <ListNotes notes={notes}></ListNotes>
+        <CreateNote notes={notes} setNotes={setNotes}></CreateNote>
       </View>
     );
   }
@@ -89,8 +91,9 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    gap: 10,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
 });

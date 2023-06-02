@@ -18,13 +18,14 @@ const ListNotes = ({ notes }) => {
 
 const styles = StyleSheet.create({
   notesContainer: {
-    marginTop: 10,
-    flex: 1,
+    display: "flex",
+    height: "auto",
+    marginTop: 20,
     flexDirection: "row",
     flexWrap: "wrap",
     padding: 2,
     gap: 10,
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "center",
   },
   li: { margin: 10 },
