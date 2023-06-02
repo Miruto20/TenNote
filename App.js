@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import * as SQLite from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import ListNotes from "./src/components/ListNotes.jsx";
 import CreateNote from "./src/components/CreateNote.jsx";
 
@@ -9,16 +16,33 @@ export default function App() {
   const test = true;
   const db = SQLite.openDatabase("ten_note.db");
   const [loading, setLoading] = useState(true);
-  const [notes, setNotes] = useState([
-    {
-      id: "1",
-      content: `EL ser humano es increíble me parece una sobrada toda esta vaina que me está contando este notas`,
-      title: "Nota de prueba",
-    },
-    { id: "2", content: "prueba 2", title: "Nota de prueba 2" },
-    { id: "3", content: "prueba 3", title: "Nota de prueba 3" },
-    { id: "4", content: "prueba 4", title: "lorem" },
-  ]);
+  const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
+  const handleSubmit = () => {
+    db.transaction((transaction) => {
+      transaction.executeSql(
+        `INSERT INTO notes(title, content) VALUES(?,?)`,
+        [title, content],
+
+        (txObj, resultSet) => {
+          const existingNotes = [...notes];
+          existingNotes.push({
+            id: resultSet.insertId,
+            title: title,
+            content: content,
+          });
+          setNotes(existingNotes);
+          setContent("");
+          setTitle("");
+        },
+
+        (txObj, error) => console.log(error)
+      );
+    });
+  };
+
+  const [notes, setNotes] = useState([]);
+
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -33,6 +57,7 @@ export default function App() {
         `SELECT * FROM notes`,
         null,
         (txObj, resultSet) => {
+          console.log(resultSet.rows._array);
           setNotes(resultSet.rows._array);
         },
         (txObj, error) => console.log(error)
@@ -53,7 +78,24 @@ export default function App() {
     return (
       <View style={styles.container}>
         <ListNotes notes={notes}></ListNotes>
-        <CreateNote notes={notes} setNotes={setNotes}></CreateNote>
+        <View>
+          <TextInput
+            style={styles.input}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Título"
+          />
+          <TextInput
+            style={styles.input}
+            value={content}
+            onChangeText={setContent}
+            placeholder="Escribe tu nota..."
+            multiline
+          />
+          <TouchableOpacity onPress={handleSubmit}>
+            <Text>Crear Nota</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }

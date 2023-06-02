@@ -1,14 +1,35 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
-
+import * as SQLite from "expo-sqlite";
 import styles from "../../styles";
 
 const CreateNote = ({ notes, setNotes }) => {
+  const db = SQLite.openDatabase("ten_note.db");
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+
   const handleSubmit = () => {
-    setContent("");
-    setTitle("");
+    db.transaction((transaction) => {
+      transaction.executeSql(
+        `INSERT INTO notes(title, content, createdAt) VALUES(?,?,?)`,
+        [title, content, new Date()],
+
+        (txObj, resultSet) => {
+          const existingNotes = [...notes];
+          existingNotes.push({
+            id: resultSet.insertId,
+            title: title,
+            content: content,
+            createdAt: new Date(),
+          });
+          setNotes(existingNotes);
+          setContent("");
+          setTitle("");
+        },
+
+        (txObj, error) => console.log(error)
+      );
+    });
   };
 
   return (
