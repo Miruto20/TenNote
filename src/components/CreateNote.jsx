@@ -3,16 +3,15 @@ import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import * as SQLite from "expo-sqlite";
 import styles from "../../styles";
 
-const CreateNote = ({ notes, setNotes }) => {
-  const db = SQLite.openDatabase("ten_note.db");
+const CreateNote = ({ notes, setNotes, db }) => {
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
 
   const handleSubmit = () => {
     db.transaction((transaction) => {
       transaction.executeSql(
-        `INSERT INTO notes(title, content, createdAt) VALUES(?,?,?)`,
-        [title, content, new Date()],
+        `INSERT INTO notes(title, content) VALUES(?,?)`,
+        [title, content],
 
         (txObj, resultSet) => {
           const existingNotes = [...notes];

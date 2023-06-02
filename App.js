@@ -13,33 +13,10 @@ import ListNotes from "./src/components/ListNotes.jsx";
 import CreateNote from "./src/components/CreateNote.jsx";
 
 export default function App() {
-  const test = true;
   const db = SQLite.openDatabase("ten_note.db");
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
-  const handleSubmit = () => {
-    db.transaction((transaction) => {
-      transaction.executeSql(
-        `INSERT INTO notes(title, content) VALUES(?,?)`,
-        [title, content],
-
-        (txObj, resultSet) => {
-          const existingNotes = [...notes];
-          existingNotes.push({
-            id: resultSet.insertId,
-            title: title,
-            content: content,
-          });
-          setNotes(existingNotes);
-          setContent("");
-          setTitle("");
-        },
-
-        (txObj, error) => console.log(error)
-      );
-    });
-  };
 
   const [notes, setNotes] = useState([]);
 
@@ -67,62 +44,17 @@ export default function App() {
     setLoading(false);
   }, []);
 
-  if (test) {
-    if (loading) {
-      return (
-        <View style={styles.container}>
-          <Text>CARREGANDO</Text>
-        </View>
-      );
-    }
+  if (loading) {
     return (
       <View style={styles.container}>
-        <ListNotes notes={notes}></ListNotes>
-        <View>
-          <TextInput
-            style={styles.input}
-            value={title}
-            onChangeText={setTitle}
-            placeholder="Título"
-          />
-          <TextInput
-            style={styles.input}
-            value={content}
-            onChangeText={setContent}
-            placeholder="Escribe tu nota..."
-            multiline
-          />
-          <TouchableOpacity onPress={handleSubmit}>
-            <Text>Crear Nota</Text>
-          </TouchableOpacity>
-        </View>
+        <Text>CARREGANDO</Text>
       </View>
     );
   }
   return (
     <View style={styles.container}>
-      {loading && <Text>Cargando las notas</Text>}
-      {!loading && (
-        <View style={styles.container}>
-          <TextInput
-            placeholder="Título"
-            onChangeText={() => {
-              setCurrentTitle(currentTitle);
-            }}
-          >
-            {currentTitle}
-          </TextInput>
-          <TextInput
-            placeholder="¿En qué piensas?"
-            onChangeText={() => {
-              setCurrentContent(currentTitle);
-            }}
-          >
-            {currentContent}
-          </TextInput>
-          <Button title="Guardar nota" onPress={handleSubmit}></Button>
-        </View>
-      )}
+      <ListNotes notes={notes}></ListNotes>
+      <CreateNote db={db} notes={notes} setNotes={setNotes}></CreateNote>
     </View>
   );
 }
