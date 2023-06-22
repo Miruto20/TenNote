@@ -14,6 +14,14 @@ export const createTables = () => {
         `CREATE TABLE IF NOT EXISTS notes(
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           title VARCHAR(20), content TEXT, 
+          folder_id INTEGER,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (folder_id) REFERENCES folders (id));`
+      );
+      transaction.executeSql(
+        `CREATE TABLE IF NOT EXISTS folders(
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          title VARCHAR(20),  
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
       );
     });
@@ -30,6 +38,7 @@ export const deleteTables = () => {
     console.log("Borrando tablas");
     db.transaction((transaction) => {
       transaction.executeSql(`DELETE TABLE IF EXISTS notes;`);
+      transaction.executeSql(`DELETE TABLE IF EXISTS folders;`);
     });
   } catch (err) {
     console.error(err.message);
