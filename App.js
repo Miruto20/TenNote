@@ -10,17 +10,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 // import { deleteTables, createTables } from "./database.js";
-
-import ListNotes from "./src/components/ListNotes.jsx";
-import ListFolders from "./src/components/ListFolders.jsx";
-
-import CreateNote from "./src/components/CreateNote.jsx";
-import CreateFolder from "./src/components/CreateFolder.jsx";
-
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { MainScreen } from "./src/screens/MainScreen.jsx";
+import { FolderScreen } from "./src/screens/FolderScreen.jsx";
+const Stack = createNativeStackNavigator();
+const db = SQLite.openDatabase("ten_note.db");
 export default function App() {
   /*   deleteTables();
   createTables(); */
-  const db = SQLite.openDatabase("ten_note.db");
+  /*   const db = SQLite.openDatabase("ten_note.db");
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
@@ -90,30 +89,25 @@ export default function App() {
     });
   };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text>CARREGANDO</Text>
-      </View>
-    );
-  }
+ */
 
   return (
-    <View style={styles.container}>
-      <ListNotes notes={notes}></ListNotes>
-      <ListFolders folders={folders} openFolder={openFolder}></ListFolders>
-      <ListNotes notes={folderNotes}></ListNotes>
-
-      <CreateNote db={db} notes={notes} setNotes={setNotes}></CreateNote>
-      <CreateFolder
-        db={db}
-        folders={folders}
-        setFolders={setFolders}
-      ></CreateFolder>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          options={{ title: "welcome" }}
+        ></Stack.Screen>
+        <Stack.Screen
+          name="folder"
+          component={FolderScreen}
+          options={{ name: "folder" }}
+        ></Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,

@@ -3,15 +3,18 @@ import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import * as SQLite from "expo-sqlite";
 import styles from "../../styles";
 
-const CreateNote = ({ notes, setNotes, db }) => {
+const CreateNote = ({ notes, setNotes, db, folderId }) => {
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
 
   const handleSubmit = () => {
     db.transaction((transaction) => {
+      if (!folderId) {
+        folderId = 0;
+      }
       transaction.executeSql(
-        `INSERT INTO notes(title, content) VALUES(?,?)`,
-        [title, content],
+        `INSERT INTO notes(title, content, folder_id) VALUES(?,?,?)`,
+        [title, content, folderId],
 
         (txObj, resultSet) => {
           const existingNotes = [...notes];
@@ -19,6 +22,7 @@ const CreateNote = ({ notes, setNotes, db }) => {
             id: resultSet.insertId,
             title: title,
             content: content,
+            folderId: folderId,
             createdAt: new Date(),
           });
           setNotes(existingNotes);
