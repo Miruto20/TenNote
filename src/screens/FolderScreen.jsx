@@ -10,12 +10,13 @@ export const FolderScreen = ({ navigation, route }) => {
 
   const [notes, setNotes] = useState([]);
   const [folders, setFolders] = useState([]);
-
+  const { folder } = route.params;
   useEffect(() => {
+    navigation.setOptions({ title: folder.title });
     db.transaction((tx) => {
       tx.executeSql(
         `SELECT * FROM notes WHERE folder_id = ?`,
-        [route.params.folderId],
+        [folder?.id],
         (txObj, resultSet) => {
           console.log(resultSet.rows._array);
           setNotes(resultSet.rows._array);

@@ -5,7 +5,7 @@ const ListFolders = ({ folders, openFolder }) => {
   return (
     <View style={styles.folderContainer}>
       {folders.map((folder) => (
-        <TouchableOpacity key={folder.id} onPress={() => openFolder(folder.id)}>
+        <TouchableOpacity key={folder.id} onPress={() => openFolder(folder)}>
           <Text style={styles.li} key={folder.id}>
             <Folder folder={folder}></Folder>
           </Text>

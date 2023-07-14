@@ -51,7 +51,7 @@ export const MainScreen = ({ navigation }) => {
 
   const [folderNotes, setFolderNotes] = useState([]);
 
-  const openFolder = (folderId) => {
+  const openFolder = (folder) => {
     /* db.transaction((tx) => {
       tx.executeSql(
         `SELECT * FROM notes WHERE folder_id = ?`,
@@ -63,7 +63,7 @@ export const MainScreen = ({ navigation }) => {
         (txObj, error) => console.log(error)
       );
     }); */
-    navigation.navigate("folder", { folderId });
+    navigation.navigate("folder", { folder });
   };
 
   return (
