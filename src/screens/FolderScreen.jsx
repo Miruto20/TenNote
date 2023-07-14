@@ -16,7 +16,7 @@ export const FolderScreen = ({ navigation, route }) => {
     db.transaction((tx) => {
       tx.executeSql(
         `SELECT * FROM notes WHERE folder_id = ?`,
-        [folder?.id],
+        [folder.id],
         (txObj, resultSet) => {
           console.log(resultSet.rows._array);
           setNotes(resultSet.rows._array);
@@ -28,12 +28,12 @@ export const FolderScreen = ({ navigation, route }) => {
 
   return (
     <View>
-      <ListNotes notes={notes} />
+      {notes.length > 0 && <ListNotes notes={notes} />}
       <CreateNote
         db={db}
         notes={notes}
         setNotes={setNotes}
-        folderId={route.params.folderId}
+        folderId={folder.id}
       ></CreateNote>
     </View>
   );

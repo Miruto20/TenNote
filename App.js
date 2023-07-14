@@ -9,7 +9,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-// import { deleteTables, createTables } from "./database.js";
+import { deleteTables, createTables } from "./database.js";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MainScreen } from "./src/screens/MainScreen.jsx";
@@ -17,8 +17,8 @@ import { FolderScreen } from "./src/screens/FolderScreen.jsx";
 const Stack = createNativeStackNavigator();
 const db = SQLite.openDatabase("ten_note.db");
 export default function App() {
-  /*   deleteTables();
-  createTables(); */
+  //deleteTables();
+  createTables();
   /*   const db = SQLite.openDatabase("ten_note.db");
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState("");
