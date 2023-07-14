@@ -37,8 +37,8 @@ export const deleteTables = () => {
   try {
     console.log("Borrando tablas");
     db.transaction((transaction) => {
-      transaction.executeSql(`DELETE TABLE IF EXISTS notes;`);
-      transaction.executeSql(`DELETE TABLE IF EXISTS folders;`);
+      transaction.executeSql(`DROP TABLE IF EXISTS notes;`);
+      transaction.executeSql(`DROP TABLE IF EXISTS folders;`);
     });
   } catch (err) {
     console.error(err.message);
