@@ -26,7 +26,7 @@ export const MainScreen = ({ navigation }) => {
 
     db.transaction((tx) => {
       tx.executeSql(
-        `SELECT * FROM notes`,
+        `SELECT * FROM notes WHERE folder_id = 0`,
         null,
         (txObj, resultSet) => {
           console.log(resultSet.rows._array);
