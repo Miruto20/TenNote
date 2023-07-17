@@ -53,44 +53,33 @@ export const deleteTables = () => {
   }
 };
 
-// Insertar Notas
-export const insertNote = (note, notes) => {
-  try {
-    // Comprueba si la nota está vacía.
-    if (!note.content) throw new error("No puedes generar notas vacías.");
+// Inserta Notas y actualiza el estado.
+export const insertNote = (note, notes, setNotes) => {
+  db.transaction((transaction) => {
+    let { folderId, title, content } = note;
 
-    // Comprueba si la nota tiene título y si no le genera uno en base al contenido.
-    if (note.title.trim() === "") {
-      if (note.content.length >= 20) {
-        note.title = note.content.substring(0, 17) + "...";
-      } else {
-        note.title = note.content;
-      }
+    if (!folderId) {
+      folderId = 0;
     }
-    // Inserta la nota en la base de datos.
-    db.transaction(
-      (transaction) => {
-        transaction.executeSql(
-          `INSERT INTO notes(title, content) VALUES(?,?)`,
-          [note.title, note.content]
-        );
-      },
-      // Callback de exito que actualiza el estado con las notas nuevas.
-      (transactionObj, resultSet) => {
-        let existingNotes = [...notes];
+    transaction.executeSql(
+      `INSERT INTO notes(title, content, folder_id) VALUES(?,?,?)`,
+      [title, content, folderId],
+
+      (txObj, resultSet) => {
+        const existingNotes = [...notes];
         existingNotes.push({
           id: resultSet.insertId,
-          title: note.title,
-          content: note.content,
-          createdAt: resultSet.insertCreatedAt,
+          title: title,
+          content: content,
+          folderId: folderId,
+          createdAt: new Date(),
         });
-      }
+        setNotes(existingNotes);
+      },
+
+      (txObj, error) => console.log(error)
     );
-  } catch (err) {
-    console.error(err.message);
-  } finally {
-    console.log("table inserted");
-  }
+  });
 };
 // Selecciona todas las notas.
 export const selectAllNotes = (setNotes) => {
@@ -112,4 +101,26 @@ export const selectAllNotes = (setNotes) => {
   } catch (err) {
     console.error(err.message);
   }
+};
+// Inserta carpetas y actualiza el estado.
+export const insertFolder = (title, setTitle, folders, setFolders) => {
+  db.transaction((transaction) => {
+    transaction.executeSql(
+      `INSERT INTO folders (title) VALUES(?)`,
+      [title],
+
+      (txObj, resultSet) => {
+        const existingFolders = [...folders];
+        existingFolders.push({
+          id: resultSet.insertId,
+          title: title,
+          createdAt: new Date(),
+        });
+        setFolders(existingFolders);
+        setTitle("");
+      },
+
+      (txObj, error) => console.log(error)
+    );
+  });
 };
